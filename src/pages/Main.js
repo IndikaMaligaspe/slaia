@@ -17,7 +17,7 @@ import { MainListItems, SecondaryListItems } from './listItems';
 
 import Dashboard  from './Dashboard';
 import Members  from './Members';
-import { CardMembership } from '@mui/icons-material';
+
 
 
 
@@ -143,8 +143,8 @@ const Main =() => {
           component="main"
           sx={{
             backgroundColor: (theme) =>
-              theme.palette.type === 'light'
-                ? theme.palette.grey[100]
+              theme.palette.type !== 'light'
+                ? theme.palette.grey[10]
                 : theme.palette.grey[900],
             flexGrow: 1,
             height: '100vh',
