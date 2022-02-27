@@ -10,6 +10,8 @@ import TablePagination from '@mui/material/TablePagination';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 
+import MembersForm from '../Forms/Members'
+
 
 function preventDefault(event) {
   event.preventDefault();
@@ -21,6 +23,9 @@ const Members =() => {
   const [rows, setRows] = React.useState([]);
   const [rowsPerPage,setRowsPerPage] = React.useState(10);
   const [page,setPage] = React.useState(0);
+
+  const [open, setOpen] = React.useState(false);
+
 
   const  callBackApi = async () => {
     const response = await fetch('/api/users');
@@ -47,13 +52,20 @@ const Members =() => {
     setPage(0);
   };
 
+  // const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const handleCreate = (event) => {
+    setOpen(true);
+  }
+
   return (
     <React.Fragment>
       <Grid container spacing={1}>
         <Grid item xs={12} md={12}>
         </Grid>
         <Grid item xs={1} md={1}>
-          <Button variant="contained">Create</Button>
+          <Button variant="contained" onClick={handleCreate}>Create</Button>
         </Grid>
         <Grid item xs={1} md={1}>
           <Button variant="contained" color="error">Delete</Button>
@@ -115,6 +127,10 @@ const Members =() => {
           </Table>
         </Grid>
       </Grid>
+      <MembersForm 
+        open={open}
+        handleClose={handleClose}
+      />
     </React.Fragment>
   );
 }
