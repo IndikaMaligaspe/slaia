@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -10,12 +9,10 @@ import TablePagination from '@mui/material/TablePagination';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 
-import MembersForm from '../Forms/Members'
+import MembersForm from '../Forms/Members';
+import DeleteRecord from '../messages/DeleteRecord';
+import Checkbox from '@mui/material/Checkbox';
 
-
-function preventDefault(event) {
-  event.preventDefault();
-}
 
 const recordToChangeInit = {
     id: 1,
@@ -36,15 +33,18 @@ const Members =() => {
   const [rowsPerPage,setRowsPerPage] = React.useState(10);
   const [page,setPage] = React.useState(0);
   const [recordToUpdate, setRecordToUpdate] = React.useState();
-
+  const [deleteMessage, setDeleteMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
+  const [deleteDialog, setDeleteDialog] = React.useState(false);
+
+  const [selected, setSelected] = React.useState([]);
+
 
 
   const  callBackApi = async () => {
     const response = await fetch('/api/users');
     const body = await response.json();
 
-    console.log(body);
     if (response.status !== 200) {
       throw Error(body.message) 
     }
@@ -65,16 +65,62 @@ const Members =() => {
     setPage(0);
   };
 
-  // const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setDeleteDialog(false);
+  }
 
   const handleCreate = (event) => {
     setOpen(true);
   }
 
+  const handleDelete = (event) => {
+    const message='Do you wish to delete these members ?';
+    setDeleteMessage(message);
+    setDeleteDialog(true);
+  }
+
   const handleEdit = (event) => {
     setRecordToUpdate(recordToChangeInit);
     setOpen(true);
+  }
+
+  const handleDeleteRecord=()=>{
+
+  }
+
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelecteds = rows.map((n) => n.name);
+      setSelected(newSelecteds);
+      return;
+    }
+    setSelected([]);
+  };
+
+  const handleClick = (event, id) => {
+    event.stopPropagation();
+    const selectedIndex = selected.indexOf(id);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1),
+      );
+    }
+
+    setSelected(newSelected);
+  }
+
+  const isSelected = (id) => {
+    return selected.indexOf(id) !== -1;
   }
 
   return (
@@ -86,7 +132,7 @@ const Members =() => {
           <Button variant="contained" onClick={handleCreate}>Create</Button>
         </Grid>
         <Grid item xs={1} md={1}>
-          <Button variant="contained" color="error">Delete</Button>
+          <Button variant="contained" color="error" onClick={handleDelete}>Delete</Button>
         </Grid>
         <Grid item>
         </Grid>
@@ -94,6 +140,7 @@ const Members =() => {
           <Table size="small">
             <TableHead>
               <TableRow>
+                <TableCell></TableCell>
                 <TableCell>Date</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Address</TableCell>
@@ -102,18 +149,30 @@ const Members =() => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.length > 0 &&  rows.map((row) => (
-                <TableRow key={row.id}
-                  hover
-                  onClick={(event) => handleEdit(event, row.id)}
-                >
+              {rows.length > 0 &&  rows.map((row, index) => {
+                const isItemSelected = isSelected(row.id);
+                const labelId = `enhanced-table-checkbox-${index}`;
+                return(<TableRow key={row.id}
+                    hover
+                    onClick={(event) =>  handleEdit(event)}
+                  >
+                  <TableCell padding="checkbox">
+                      <Checkbox
+                          color="primary"
+                          checked={isItemSelected}
+                          inputProps={{
+                            'aria-labelledby': labelId,
+                          }}
+                          onClick={(event) => handleClick(event, row.id)}
+                        />
+                  </TableCell>
                   <TableCell>{row.date}</TableCell>
                   <TableCell>{row.name}</TableCell>
                   <TableCell>{row.shipTo}</TableCell>
                   <TableCell>{row.paymentMethod}</TableCell>
                   <TableCell align="right">{`LKR ${row.amount}`}</TableCell>
-                </TableRow>
-              ))}
+                </TableRow>);
+              })}
             </TableBody>
             <TableFooter>
               <TableRow>
@@ -153,6 +212,12 @@ const Members =() => {
         handleClose={handleClose}
         recordToUpdate={recordToUpdate}
       />
+      <DeleteRecord
+        handleClose={handleClose}
+        handleOk={handleDeleteRecord}
+        message={deleteMessage}
+        open={deleteDialog}
+      ></DeleteRecord>
     </React.Fragment>
   );
 }
