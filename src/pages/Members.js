@@ -17,12 +17,25 @@ function preventDefault(event) {
   event.preventDefault();
 }
 
+const recordToChangeInit = {
+    id: 1,
+    name:"Indika Maligaspe",
+    nic:"772650590V",
+    address1:"test1",
+    address2:"test2",
+    city:"Colombo",
+    dob: new Date('1977-09-21').toUTCString(),
+    gender:"M",
+    occupation:"CTO",
+    doj: new Date('2001-01-01').toUTCString(),
+}
 
 const Members =() => {
 
   const [rows, setRows] = React.useState([]);
   const [rowsPerPage,setRowsPerPage] = React.useState(10);
   const [page,setPage] = React.useState(0);
+  const [recordToUpdate, setRecordToUpdate] = React.useState();
 
   const [open, setOpen] = React.useState(false);
 
@@ -59,6 +72,11 @@ const Members =() => {
     setOpen(true);
   }
 
+  const handleEdit = (event) => {
+    setRecordToUpdate(recordToChangeInit);
+    setOpen(true);
+  }
+
   return (
     <React.Fragment>
       <Grid container spacing={1}>
@@ -85,7 +103,10 @@ const Members =() => {
             </TableHead>
             <TableBody>
               {rows.length > 0 &&  rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id}
+                  hover
+                  onClick={(event) => handleEdit(event, row.id)}
+                >
                   <TableCell>{row.date}</TableCell>
                   <TableCell>{row.name}</TableCell>
                   <TableCell>{row.shipTo}</TableCell>
@@ -130,6 +151,7 @@ const Members =() => {
       <MembersForm 
         open={open}
         handleClose={handleClose}
+        recordToUpdate={recordToUpdate}
       />
     </React.Fragment>
   );

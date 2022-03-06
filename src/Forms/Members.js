@@ -1,85 +1,131 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider'
 import Backdrop from '@mui/material/Backdrop';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import Fade from '@mui/material/Fade';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Radio from '@mui/material/Radio';
+import Button from '@mui/material/Button';
 
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormLabel from '@mui/material/FormLabel';
 
 
 import DesktopDatePicker from '@mui/lab/DesktopDatePicker';
+import { Typography } from '@mui/material';
 
-const BoxStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 600,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-  };
 
-const Members = ({open, handleClose, recordToUpdate}) => {
-    const [doj, setDOJ] = useState(new Date());
-    const [dob, setDOB] = useState(new Date());
-    const [sex, setSex] = useState('M');
+const initialValues = {
+    name:"",
+    nic:"",
+    address1:"",
+    address2:"",
+    city:"",
+    dob: new Date('2001-01-01').toUTCString(),
+    gender:"M",
+    occupation:"",
+    doj: new Date('2001-01-01').toUTCString(),
+}
 
-    
-    const handleDOJ = (doj) => {
-        setDOJ(doj);
+
+const Members = ({open, handleClose, handleSave, recordToUpdate}) => {
+    const [values, setValues] = useState(initialValues);
+
+    useEffect (()=>{
+        console.log('recordToUpdate', recordToUpdate);
+        if (recordToUpdate)
+            setValues(recordToUpdate);
+        else
+            setValues(initialValues);
+    },[recordToUpdate])
+
+    const handleInput = (e) =>{
+        const {name, value} = e.target;
+        values[name] = value;
+        setValues({
+            ...values,
+            [name]: value
+        });
+    }
+
+    const handleDOJ = (_doj) => {
+        setValues({
+            ...values,
+            'doj': _doj.toUTCString()
+        });
     };
 
     
-    const handleDOB = (dob) => {
-        setDOB(dob);
+    const handleDOB = (_dob) => {
+        setValues({
+            ...values,
+            'dob': _dob.toUTCString()
+        });
     };
 
-    const handleSex = (_sex) => {
-        console.log('sex',_sex);
-        setSex(_sex);
-    };
+    const onClose = () => {
+        handleClose(false);
+      };
+    
+
+    const onSave = () =>{
+        // handleSave(recordToUpdate);
+        console.log(values);
+        handleClose(false);
+    }
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <div>
-                <Modal
-                    aria-labelledby="transition-modal-title"
-                    aria-describedby="transition-modal-description"
+                <Dialog
                     open={open}
                     onClose={handleClose}
                     closeAfterTransition
                     BackdropComponent={Backdrop}
-                    BackdropProps={{
-                    timeout: 500,
-                    }}
                 >
-                    <Fade in={open}>
-                        <Box sx={BoxStyle}>
+                    <DialogTitle>Create Member
+
+                    <IconButton
+                        aria-label="close"
+                        onClick={onClose}
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                        >
+                        <CloseIcon />
+                    </IconButton>
+
+                    </DialogTitle>
+                    <DialogContent>
                             <Grid container spacing={1}>
                                 <Grid item xs={12} md={12}>
+                                </Grid>
+                                <Grid item xs={12} md={12}>
                                     <TextField
-                                        style={{ width: "400px", margin: "5px" }}
-                                        id="name"
+                                        style={{ width: "400px", marginBottom:"5px"}}
+                                        name="name"
                                         required
                                         type="text"
                                         label="Name" 
                                         variant="outlined"
+                                        value={values.name}
+                                        onChange={(event)=>{handleInput(event)}}
                                     />
                                 </Grid>    
                                 <Grid item xs={12} md={12}>
                                     <TextField
-                                        style={{ width: "200px", margin: "5px" }}
-                                        id="nic"
+                                        style={{ width: "200px", marginBottom:"5px" }}
+                                        name="nic"
                                         required
                                         type="text"
                                         label="NIC or Passport" 
@@ -87,80 +133,103 @@ const Members = ({open, handleClose, recordToUpdate}) => {
                                         inputProps={
                                             {maxLength: 20}
                                         }
+                                        value={values.nic}
+                                        onChange={(event)=>{handleInput(event)}}
                                     />
                                 </Grid>    
 
                                 <Grid item xs={12} md={12}>
                                     <TextField
-                                        style={{ width: "400px", margin: "5px" }}
-                                        id="address1"
+                                        style={{ width: "400px", marginBottom:"5px" }}
+                                        name="address1"
                                         type="text"
                                         label="Address Line 1"
                                         variant="outlined"
+                                        value={values.address1}
+                                        onChange={(event)=>{handleInput(event)}}
                                     />
                                 </Grid>
                                 <Grid item xs={12} md={12}>
                                     <TextField
-                                        style={{ width: "400px", margin: "5px" }}
-                                        id="address2"                                    
+                                        style={{ width: "400px", marginBottom:"5px"}}
+                                        name="address2"                                    
                                         type="text"
                                         label="Address Line 2"
                                         variant="outlined"
+                                        value={values.address2}
+                                        onChange={(event)=>{handleInput(event)}}
                                     />
                                 </Grid>    
                                 <Grid item xs={12} md={12}>
                                     <TextField
-                                        style={{ width: "250px", margin: "5px" }}
-                                        id="city"                                    
+                                        style={{ width: "250px", marginBottom:"5px" }}
+                                        name="city"                                    
                                         type="text"
                                         label="City"
                                         variant="outlined"
+                                        value={values.city}
+                                        onChange={(event)=>{handleInput(event)}}
                                     />
                                 </Grid>   
                                 <Grid item xs={12} md={12}>
                                     <DesktopDatePicker
-                                        style={{ width: "400px", margin: "5px" }}
+                                        style={{ width: "400px", marginBottom:"5px" }}
+                                        name="dob"
                                         label="Date of birth"
                                         inputFormat="MM/dd/yyyy"
-                                        value={dob}
+                                        value={values.dob}
                                         onChange={handleDOB}
                                         renderInput={(params) => <TextField {...params} />}
                                     />
                                 </Grid>   
                                 <Grid item xs={6} md={6}>
-                                    <RadioGroup
-                                        aria-label="Gender"
-                                        name="gender1"
-                                        // className={classes.group}
-                                        value={sex}
-                                        onChange={handleSex}
-                                    >
-                                        <FormControlLabel value="F" control={<Radio />} label="Female" />
-                                        <FormControlLabel value="M" control={<Radio />} label="Male" />
-                                    </RadioGroup>    
-                                </Grid>   
+                                    <Typography>
+                                        <Grid item xs={6} md={6}>
+                                            <div>Sex</div>
+                                        </Grid>
+                                        <Grid item xs={6} md={6}>
+                                            <RadioGroup
+                                                aria-label="Gender"
+                                                name="gender"
+                                                value={values.gender}
+                                                onChange={(event)=>{handleInput(event)}}
+                                                style={{ marginLeft: "20px" }}
+                                            >
+                                                <FormControlLabel value="M" control={<Radio />} label="Male" />
+                                                <FormControlLabel value="F" control={<Radio />} label="Female" />
+                                            </RadioGroup>    
+                                        </Grid>   
+                                    </Typography>
+                                </Grid>
                                 <Grid item xs={12} md={12}>
                                     <TextField
-                                        style={{ width: "400px", margin: "5px" }}
-                                        id="occupation"                                    
+                                        style={{ width: "400px", marginBottom:"5px" }}
+                                        name="occupation"                                    
                                         type="text"
                                         label="Occupation"
                                         variant="outlined"
+                                        value={values.occupation}
+                                        onChange={(event)=>{handleInput(event)}}
                                     />
                                 </Grid>   
                                 <Grid item xs={12} md={12}>
                                     <DesktopDatePicker
                                         label="Date of join"
+                                        name="doj"
                                         inputFormat="MM/dd/yyyy"
-                                        value={doj}
+                                        value={values.doj}
                                         onChange={handleDOJ}
                                         renderInput={(params) => <TextField {...params} />}
+                                        // onChange={(event)=>{handleInput(event);handleDOJ()}}
                                     />
                                 </Grid>   
                             </Grid>
-                        </Box>
-                    </Fade>
-                </Modal>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={onClose}>Cancel</Button>
+                        <Button onClick={onSave}>Save</Button>
+                    </DialogActions>
+                </Dialog>
             </div>
         </LocalizationProvider>
     );
