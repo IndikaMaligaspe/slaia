@@ -13,6 +13,7 @@ import MembersForm from '../Forms/Members';
 import DeleteRecord from '../messages/DeleteRecord';
 import Checkbox from '@mui/material/Checkbox';
 
+import * as useMemberService from '../components/services/MembersService';
 
 const recordToChangeInit = {
     id: 1,
@@ -36,13 +37,13 @@ const Members =() => {
   const [deleteMessage, setDeleteMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
   const [deleteDialog, setDeleteDialog] = React.useState(false);
+  const [service, setService] = React.useState(useMemberService)
 
   const [selected, setSelected] = React.useState([]);
 
-
-
-  const  callBackApi = async () => {
-    const response = await fetch('/api/users');
+  
+  const  getMembers = async () => {
+    const response = await fetch(service.getMembers);
     const body = await response.json();
 
     if (response.status !== 200) {
@@ -50,8 +51,25 @@ const Members =() => {
     }
     return body;
   }
+
+
+  const createOrUpdateMembers = async (values) => {
+    console.log('values', JSON.stringify(values), 'recordToUpdate', recordToUpdate);
+    if(!recordToUpdate) {
+      const response = await fetch(service.postMembers, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values),
+      });
+    } else {
+
+    }
+  }
+
   React.useEffect(async () =>{
-    let rows = await callBackApi();
+    let rows = await getMembers();
     setRows(rows);
   },[]);
 
@@ -211,6 +229,7 @@ const Members =() => {
         open={open}
         handleClose={handleClose}
         recordToUpdate={recordToUpdate}
+        createOrUpdateMembers={createOrUpdateMembers}
       />
       <DeleteRecord
         handleClose={handleClose}

@@ -35,7 +35,7 @@ const initialValues = {
 }
 
 
-const Members = ({open, handleClose, handleSave, recordToUpdate}) => {
+const Members = ({open, handleClose, createOrUpdateMembers, recordToUpdate}) => {
     const [values, setValues] = useState(initialValues);
 
     useEffect (()=>{
@@ -78,6 +78,7 @@ const Members = ({open, handleClose, handleSave, recordToUpdate}) => {
     const onSave = () =>{
         // handleSave(recordToUpdate);
         console.log(values);
+        createOrUpdateMembers(values);
         handleClose(false);
     }
 
@@ -86,9 +87,9 @@ const Members = ({open, handleClose, handleSave, recordToUpdate}) => {
             <div>
                 <Dialog
                     open={open}
-                    onClose={handleClose}
                     closeAfterTransition
                     BackdropComponent={Backdrop}
+                    keepMounted
                 >
                     <DialogTitle>Create Member
 

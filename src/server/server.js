@@ -1,6 +1,12 @@
 const express = require('express');
 const pino = require('express-pino-logger')();
+const cors = require('cors');
+var bodyParser = require("body-parser");
+
 const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
 const port = process.env.PORT || 5000;
 
 const users = [
@@ -16,7 +22,11 @@ app.get('/api/recent_transactions', (req, res) => {
     res.send(JSON.stringify(users));
 })
 
-app.get('/api/users', (req, res) => {
+app.get('/api/members', (req, res) => {
   res.send(JSON.stringify(users));
+})
+app.post('/api/members', (req, res) => {
+  console.log(req.body);
+  res.send(req.body);
 })
 var server = app.listen(port, () => console.log('Listning to server on port ${port}'));
