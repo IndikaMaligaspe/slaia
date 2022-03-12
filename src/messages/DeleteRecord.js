@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import React from 'react';
 
-const DeleteRecord = ({ handleClose, handleOk, message, open }) =>{
+const DeleteRecord = ({ handleClose, handleOk, message, open, selected }) =>{
 
     const onOk =() => {
         handleOk(true);
@@ -17,6 +17,27 @@ const DeleteRecord = ({ handleClose, handleOk, message, open }) =>{
         handleClose(false);
     }
 
+    let content = <></>;
+    if (selected.length > 0) {
+        content =  <div>
+                    <DialogContent>
+                            {message}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={onCancel}>Cancel</Button>
+                        <Button onClick={onOk}  color="error">Delete</Button>
+                    </DialogActions>
+                </div> 
+    } else {
+        content =  <div>
+                    <DialogContent>
+                            Please select an ID to delete
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={onCancel}>Cancel</Button>
+                    </DialogActions>
+                </div> 
+    }
     return (
         <React.Fragment>
             <Dialog  
@@ -26,13 +47,7 @@ const DeleteRecord = ({ handleClose, handleOk, message, open }) =>{
                 BackdropComponent={Backdrop}>
                 <DialogTitle  color="error"> Delete 
                 </DialogTitle>
-                <DialogContent>
-                            {message}
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={onCancel}>Cancel</Button>
-                        <Button onClick={onOk}  color="error">Delete</Button>
-                    </DialogActions>
+                {content}
             </Dialog>
         </React.Fragment>
     );

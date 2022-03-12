@@ -15,29 +15,27 @@ import Checkbox from '@mui/material/Checkbox';
 
 import * as useMemberService from '../components/services/MembersService';
 
-const recordToChangeInit = {
-    id: 1,
-    name:"Indika Maligaspe",
-    nic:"772650590V",
-    address1:"test1",
-    address2:"test2",
-    city:"Colombo",
-    dob: new Date('1977-09-21').toUTCString(),
-    gender:"M",
-    occupation:"CTO",
-    doj: new Date('2001-01-01').toUTCString(),
+const initRecordToUpdate = {
+  id: '',
+  name:'',
+  nic:'',
+  address:'',
+  dob: new Date(),
+  gender:'M',
+  occupation:'',
+  doj: new Date('2001-01-01'),
 }
-
 const Members =() => {
 
   const [rows, setRows] = React.useState([]);
   const [rowsPerPage,setRowsPerPage] = React.useState(10);
   const [page,setPage] = React.useState(0);
-  const [recordToUpdate, setRecordToUpdate] = React.useState();
+  const [recordToUpdate, setRecordToUpdate] = React.useState(initRecordToUpdate);
   const [deleteMessage, setDeleteMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
   const [deleteDialog, setDeleteDialog] = React.useState(false);
   const [service, setService] = React.useState(useMemberService)
+  const [reload, setReload] = React.useState(true);
 
   const [selected, setSelected] = React.useState([]);
 
@@ -54,7 +52,6 @@ const Members =() => {
 
 
   const createOrUpdateMembers = async (values) => {
-    console.log('values', JSON.stringify(values), 'recordToUpdate', recordToUpdate);
     if(!recordToUpdate) {
       const response = await fetch(service.postMembers, {
         method: 'post',
@@ -64,14 +61,22 @@ const Members =() => {
         body: JSON.stringify(values),
       });
     } else {
-
+        const response = await fetch(service.putMember+`/${recordToUpdate.id}`, {
+        method: 'put',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values),
+      });
     }
+    setReload(true);
   }
 
   React.useEffect(async () =>{
     let rows = await getMembers();
     setRows(rows);
-  },[]);
+    setReload(false);
+  },[reload]);
 
 
   const handleChangePage = (event, newPage) => {
@@ -89,6 +94,7 @@ const Members =() => {
   }
 
   const handleCreate = (event) => {
+    setRecordToUpdate(null);
     setOpen(true);
   }
 
@@ -98,13 +104,35 @@ const Members =() => {
     setDeleteDialog(true);
   }
 
-  const handleEdit = (event) => {
-    setRecordToUpdate(recordToChangeInit);
+  const handleEdit = (event, _id) => {
+    setRecordToUpdate(rows.map((r)=>{
+        return({
+          id: r.id,
+          name:r.name,
+          nic:r.nic,
+          address:r.address,
+          dob: new Date(r.date_of_birth),
+          gender:r.sex,
+          occupation:r.occupation,
+          doj: new Date(r.date_of_join),
+        })
+    }).find((r)=>r.id === _id));
     setOpen(true);
   }
 
-  const handleDeleteRecord=()=>{
-
+  const handleDeleteRecord= async ()=>{
+    setDeleteDialog(false);
+    try{
+      const response = await fetch(service.deleteMember+`/${selected}`, {
+        method: 'delete',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+      setReload(true);
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   const handleSelectAllClick = (event) => {
@@ -117,6 +145,7 @@ const Members =() => {
   };
 
   const handleClick = (event, id) => {
+    
     event.stopPropagation();
     const selectedIndex = selected.indexOf(id);
     let newSelected = [];
@@ -133,7 +162,6 @@ const Members =() => {
         selected.slice(selectedIndex + 1),
       );
     }
-
     setSelected(newSelected);
   }
 
@@ -159,11 +187,13 @@ const Members =() => {
             <TableHead>
               <TableRow>
                 <TableCell></TableCell>
-                <TableCell>Date</TableCell>
+                <TableCell>Membership No</TableCell>
                 <TableCell>Name</TableCell>
+                <TableCell>NIC</TableCell>
                 <TableCell>Address</TableCell>
-                <TableCell>Payments for</TableCell>
-                <TableCell align="right">Amount</TableCell>
+                <TableCell>Date of Birth</TableCell>
+                <TableCell>Date of Join</TableCell>
+                <TableCell>Occupation</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -172,7 +202,7 @@ const Members =() => {
                 const labelId = `enhanced-table-checkbox-${index}`;
                 return(<TableRow key={row.id}
                     hover
-                    onClick={(event) =>  handleEdit(event)}
+                    onClick={(event) =>  handleEdit(event,row.id)}
                   >
                   <TableCell padding="checkbox">
                       <Checkbox
@@ -184,11 +214,13 @@ const Members =() => {
                           onClick={(event) => handleClick(event, row.id)}
                         />
                   </TableCell>
-                  <TableCell>{row.date}</TableCell>
+                  <TableCell>M-{row.id}</TableCell>
                   <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.shipTo}</TableCell>
-                  <TableCell>{row.paymentMethod}</TableCell>
-                  <TableCell align="right">{`LKR ${row.amount}`}</TableCell>
+                  <TableCell>{row.nic}</TableCell>
+                  <TableCell>{row.address}</TableCell>
+                  <TableCell>{new Date(row.date_of_birth).toISOString().split('T')[0]}</TableCell>
+                  <TableCell>{new Date(row.date_of_join).toISOString().split('T')[0]}</TableCell>
+                  <TableCell>{row.occupation}</TableCell>
                 </TableRow>);
               })}
             </TableBody>
@@ -236,6 +268,7 @@ const Members =() => {
         handleOk={handleDeleteRecord}
         message={deleteMessage}
         open={deleteDialog}
+        selected={selected}
       ></DeleteRecord>
     </React.Fragment>
   );

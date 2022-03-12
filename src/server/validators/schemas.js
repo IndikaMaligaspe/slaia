@@ -1,9 +1,9 @@
 const Joi = require('joi');
 const memberSchema = Joi.object().keys({
+    id: Joi.any(),
     nic: Joi.string().required().length(9),
     name: Joi.string().required(),
-    address1: Joi.string().required(),
-    address2: Joi.any(),
+    address: Joi.string().required(),
     city: Joi.string(),
     occupation:Joi.string().required(),
     dob: Joi.date().required(),
@@ -12,5 +12,5 @@ const memberSchema = Joi.object().keys({
 });
 
 module.exports = {
-    '/api/members':memberSchema
+    'members':memberSchema
 }

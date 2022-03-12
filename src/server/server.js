@@ -4,17 +4,13 @@ const cors = require('cors');
 var bodyParser = require("body-parser");
 const createHttpError = require('http-errors')
 const db = require("./models"); // models path depend on your structure
-const SchemaValidator = require('./middleware/schemaValidator');
+const validateRequest = require('./middleware/schemaValidator');
 
-const validateRequest = SchemaValidator(true);
+// const validateRequest = SchemaValidator(true);
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-
-
-// const salai = db.slaia;
-
 
 const port = process.env.PORT || 5000;
 
@@ -32,23 +28,81 @@ app.get('/api/recent_transactions', (req, res) => {
     res.send(JSON.stringify(users));
 })
 
-app.get('/api/members', (req, res) => {
-  res.send(JSON.stringify(users));
+app.get('/api/members/:id', async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const member = await db.models.members.findByPk(id);
+    if(member)
+      res.send(member);
+    else
+      res.status(404).send(`Member with id ${id} not found!`);
+
+  } catch(err){
+    res.status(500);
+    next;
+  }
 })
-app.post('/api/members', validateRequest, async (req, res, next) => {
+
+app.get('/api/members', async (req, res, next) => {
+  try {
+    const members = await db.models.members.findAll();
+    res.send(members);
+  } catch(err){
+    res.status(500);
+    next;
+  }
+})
+
+
+app.post('/api/members', validateRequest('members'), async (req, res, next) => {
   try{
-    const { nic, name, address1, address2,city, occupation, dob, doj , gender  } = req.body;
-    const address = address1.concat(',', address2, ',', city);
+    const { nic, name, address,  occupation, dob, doj , gender  } = req.body;
     const date_of_birth = dob;
     const date_of_join = doj;
     const sex = gender;
     const msg = await db.models.members.create( { nic, name, address, occupation, address, date_of_birth , date_of_join , sex  });
-    res.status(201);
+    res.status(201).send();
   } catch(err) {
     res.status(500);
     next;
   }
-  // res.send(req.body);
+})
+
+app.put('/api/members/:id', validateRequest('members'), async (req, res, next) => {
+  try{
+    const id = req.params.id;
+    console.log(`ID -> ${id}`);
+    const member = await db.models.members.findByPk(id);
+
+    if(!member)
+      res.status(404).send(`Member with id ${id} not found!`);
+
+    const { nic, name, address, occupation, dob, doj , gender  } = req.body;
+    const date_of_birth = dob;
+    const date_of_join = doj;
+    const sex = gender;
+    const msg = await db.models.members.update( { nic, name, address, occupation, address, date_of_birth , date_of_join , sex  }, 
+      {where: {id}});
+    res.status(200).send();
+  } catch(err) {
+    res.status(500);
+    next;
+  }
+})
+
+app.delete('/api/members/:id',  async (req, res, next) => {
+  try{
+    const id = req.params.id;
+    const member = await db.models.members.findByPk(id);
+    if(!member)
+      res.status(404).send(`Member with id ${id} not found!`);
+
+    const msg = await db.models.members.destroy( {where: {id}});
+    res.status(200).send();
+  } catch(err) {
+    res.status(500);
+    next;
+  }
 })
 
 //* Catch HTTP 404 

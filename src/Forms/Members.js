@@ -25,9 +25,7 @@ import { Typography } from '@mui/material';
 const initialValues = {
     name:"",
     nic:"",
-    address1:"",
-    address2:"",
-    city:"",
+    address:"",
     dob: new Date('2001-01-01').toUTCString(),
     gender:"M",
     occupation:"",
@@ -39,7 +37,6 @@ const Members = ({open, handleClose, createOrUpdateMembers, recordToUpdate}) => 
     const [values, setValues] = useState(initialValues);
 
     useEffect (()=>{
-        console.log('recordToUpdate', recordToUpdate);
         if (recordToUpdate)
             setValues(recordToUpdate);
         else
@@ -142,36 +139,14 @@ const Members = ({open, handleClose, createOrUpdateMembers, recordToUpdate}) => 
                                 <Grid item xs={12} md={12}>
                                     <TextField
                                         style={{ width: "400px", marginBottom:"5px" }}
-                                        name="address1"
+                                        name="address"
                                         type="text"
-                                        label="Address Line 1"
+                                        label="Address"
                                         variant="outlined"
-                                        value={values.address1}
+                                        value={values.address}
                                         onChange={(event)=>{handleInput(event)}}
                                     />
                                 </Grid>
-                                <Grid item xs={12} md={12}>
-                                    <TextField
-                                        style={{ width: "400px", marginBottom:"5px"}}
-                                        name="address2"                                    
-                                        type="text"
-                                        label="Address Line 2"
-                                        variant="outlined"
-                                        value={values.address2}
-                                        onChange={(event)=>{handleInput(event)}}
-                                    />
-                                </Grid>    
-                                <Grid item xs={12} md={12}>
-                                    <TextField
-                                        style={{ width: "250px", marginBottom:"5px" }}
-                                        name="city"                                    
-                                        type="text"
-                                        label="City"
-                                        variant="outlined"
-                                        value={values.city}
-                                        onChange={(event)=>{handleInput(event)}}
-                                    />
-                                </Grid>   
                                 <Grid item xs={12} md={12}>
                                     <DesktopDatePicker
                                         style={{ width: "400px", marginBottom:"5px" }}
