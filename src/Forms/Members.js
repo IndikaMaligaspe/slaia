@@ -73,7 +73,6 @@ const Members = ({open, handleClose, createOrUpdateMembers, recordToUpdate}) => 
     
 
     const onSave = () =>{
-        // handleSave(recordToUpdate);
         console.log(values);
         createOrUpdateMembers(values);
         handleClose(false);

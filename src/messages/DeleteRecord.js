@@ -29,14 +29,14 @@ const DeleteRecord = ({ handleClose, handleOk, message, open, selected }) =>{
                     </DialogActions>
                 </div> 
     } else {
-        content =  <div>
+        content =  <>
                     <DialogContent>
                             Please select an ID to delete
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={onCancel}>Cancel</Button>
                     </DialogActions>
-                </div> 
+                </> 
     }
     return (
         <React.Fragment>

@@ -15,8 +15,8 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { MainListItems, SecondaryListItems } from './listItems';
 
-import Dashboard  from './Dashboard';
-import Members  from './Members';
+import { Dashboard, Members, MemberPayments, Attendance}  from './';
+
 
 
 
@@ -132,25 +132,25 @@ const Main =() => {
               <ChevronLeftIcon />
             </IconButton>
           </Toolbar>
-          <Divider />
-          <List><MainListItems 
-            setComponent = {setComponent}
-          /></List>
-          <Divider />
-          <List> <SecondaryListItems /></List>
-        </Drawer>
-        <Box
-          component="main"
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.type !== 'light'
-                ? theme.palette.grey[10]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            height: '100vh',
-            overflow: 'auto',
-          }}
-        >
+              <Divider />
+              <List><MainListItems 
+                setComponent = {setComponent}
+              /></List>
+              <Divider />
+              <List> <SecondaryListItems /></List>
+            </Drawer>
+            <Box
+              component="main"
+              sx={{
+                backgroundColor: (theme) =>
+                  theme.palette.type !== 'light'
+                    ? theme.palette.grey[10]
+                    : theme.palette.grey[900],
+                flexGrow: 1,
+                height: '100vh',
+                overflow: 'auto',
+              }}
+            >
           <Toolbar />
           {
             component === "dashbord" ?
@@ -158,6 +158,12 @@ const Main =() => {
             :
             component === "member" ?
             <Members />
+            :
+            component === "memberPayments" ?
+            <MemberPayments />
+            :
+            component === "memberAttendance" ?
+            <Attendance />
             :
             <Dashboard />
           }

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -19,15 +19,16 @@ import * as useMemberService from '../components/services/MembersService';
 const initRecordToUpdate = {
   id: '',
   name:'',
-  nic:'',
-  address:'',
-  dob: new Date(),
-  gender:'M',
-  occupation:'',
-  doj: new Date('2001-01-01'),
+  member_id:'',
+  description:'',
+  ammount:0.00,
+  date_of_payment: new Date(),
+  reciept_no:'',
+  remarks:''
 }
-const Members =() => {
 
+
+export default function MemberPayments() {
   const [rows, setRows] = React.useState([]);
   const [rowsPerPage,setRowsPerPage] = React.useState(10);
   const [page,setPage] = React.useState(0);
@@ -45,8 +46,8 @@ const Members =() => {
   const [selected, setSelected] = React.useState([]);
 
   
-  const  getMembers = async () => {
-    const response = await fetch(service.getMembers);
+  const  getMembersPayments = async () => {
+    const response = await fetch(service.getMembersPayments);
     const body = await response.json();
 
     if (response.status !== 200) {
@@ -56,10 +57,10 @@ const Members =() => {
   }
 
 
-  const createOrUpdateMembers = async (values) => {
+  const createOrUpdateMemberPayment = async (values) => {
       try{
         if(!recordToUpdate) {
-          const response = await fetch(service.postMembers, {
+          const response = await fetch(service.postMemberPayments, {
             method: 'post',
             headers: {
               'Content-Type': 'application/json'
@@ -72,7 +73,7 @@ const Members =() => {
             showSuccessDialog(true, 'Could not save due to - '.concat(JSON.stringify(response.body)));
           }  
         } else {
-            const response = await fetch(service.putMember+`/${recordToUpdate.id}`, {
+            const response = await fetch(service.putMemberPayment+`/${recordToUpdate.id}`, {
             method: 'put',
             headers: {
               'Content-Type': 'application/json'
@@ -93,7 +94,7 @@ const Members =() => {
   }
 
   React.useEffect(async () =>{
-    let rows = await getMembers();
+    let rows = await getMembersPayments();
     setRows(rows);
     setReload(false);
   },[reload]);
@@ -119,7 +120,7 @@ const Members =() => {
   }
 
   const handleDelete = (event) => {
-    const message='Do you wish to delete these members ?';
+    const message='Do you wish to delete these payments ?';
     setDeleteMessage(message);
     setDeleteDialog(true);
   }
@@ -129,12 +130,13 @@ const Members =() => {
         return({
           id: r.id,
           name:r.name,
-          nic:r.nic,
-          address:r.address,
-          dob: new Date(r.date_of_birth),
-          gender:r.sex,
-          occupation:r.occupation,
-          doj: new Date(r.date_of_join),
+          member_id:r.member_id,
+          description:r.description,
+          amount:r.amount,
+          date_of_payment: r.date_of_payment,
+          reciept_no:r.reciept_no,
+          remarks:r.remarks
+
         })
     }).find((r)=>r.id === _id));
     setOpen(true);
@@ -143,7 +145,7 @@ const Members =() => {
   const handleDeleteRecord= async ()=>{
     setDeleteDialog(false);
     try{
-      const response = await fetch(service.deleteMember+`/${selected}`, {
+      const response = await fetch(service.deleteMemberPayment+`/${selected}`, {
         method: 'delete',
         headers: {
           'Content-Type': 'application/json'
@@ -222,11 +224,11 @@ const Members =() => {
                 <TableCell></TableCell>
                 <TableCell>Membership No</TableCell>
                 <TableCell>Name</TableCell>
-                <TableCell>NIC</TableCell>
-                <TableCell>Address</TableCell>
-                <TableCell>Date of Birth</TableCell>
-                <TableCell>Date of Join</TableCell>
-                <TableCell>Occupation</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell>Amount (Rs.)</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Receipt No.</TableCell>
+                <TableCell>Remarks</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -249,11 +251,11 @@ const Members =() => {
                   </TableCell>
                   <TableCell>M-{row.id}</TableCell>
                   <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.nic}</TableCell>
-                  <TableCell>{row.address}</TableCell>
-                  <TableCell>{new Date(row.date_of_birth).toISOString().split('T')[0]}</TableCell>
-                  <TableCell>{new Date(row.date_of_join).toISOString().split('T')[0]}</TableCell>
-                  <TableCell>{row.occupation}</TableCell>
+                  <TableCell>{row.description}</TableCell>
+                  <TableCell>{row.amount}</TableCell>
+                  <TableCell>{new Date(row.date_of_payment).toISOString().split('T')[0]}</TableCell>
+                  <TableCell>{row.reciept_no}</TableCell>
+                  <TableCell>{row.remarks}</TableCell>
                 </TableRow>);
               })}
             </TableBody>
@@ -294,7 +296,7 @@ const Members =() => {
         open={open}
         handleClose={handleClose}
         recordToUpdate={recordToUpdate}
-        createOrUpdateMembers={createOrUpdateMembers}
+        createOrUpdateMembers={createOrUpdateMemberPayment}
       />
       <DeleteRecord
         handleClose={handleClose}
@@ -311,5 +313,3 @@ const Members =() => {
     </React.Fragment>
   );
 }
-
-export default Members;

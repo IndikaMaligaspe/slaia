@@ -4,7 +4,7 @@ const {Sequelize} = require("sequelize");
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
   dialect: dbConfig.dialect,
-  operatorsAliases: false,
+  operatorsAliases: 0,
 
   pool: {
     max: dbConfig.pool.max,
@@ -16,6 +16,7 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
 
 const db = [
   require("../models/members"),
+  require("../models/memberPayments"),
 ].map(m=> m(sequelize,Sequelize));
 
 // db.Sequelize = Sequelize;

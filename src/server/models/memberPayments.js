@@ -1,35 +1,32 @@
-
 const {DataTypes} = require('sequelize');
 
-module.exports = (sequelize) => {
-    sequelize.define("members", {
+module.exports =   (sequelize) => {
+        sequelize.define("memberPaymentHistory", {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
             allowNull: false
         },
-        nic: {
-            type: DataTypes.STRING(10)
+        member_id: {
+            type: DataTypes.INTEGER
         },
-        name: {
+        description: {
             type: DataTypes.STRING(1000)
         },
-        address: {
+        ammount: {
+            type: DataTypes.DOUBLE(6,2)
+        },
+        reciept_no: {
             type: DataTypes.STRING(1000)
         },
-        occupation: {
-            type: DataTypes.STRING(1000)
-        },
-        date_of_join: {
+        date_of_payment: {
             type: DataTypes.DATE
         },
-        date_of_birth: {
-            type: DataTypes.DATE
-        },
-        sex: {
-            type: DataTypes.STRING(1)
+        remarks: {
+            type: DataTypes.STRING(1000)
         }
     },
+    {tableName: 'member_payment_history'},
     {timestamps: false});
 };

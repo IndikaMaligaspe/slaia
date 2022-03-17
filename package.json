@@ -32,7 +32,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "node ./src/server/server.js --exec nodemon | pino-colada",
+    "server": "node --trace-deprecation ./src/server/server.js --exec  nodemon | pino-colada",
     "dev": "run-p server"
   },
   "proxy": "http://localhost:5000",

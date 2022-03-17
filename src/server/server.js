@@ -6,6 +6,7 @@ const createHttpError = require('http-errors')
 const db = require("./models"); // models path depend on your structure
 const validateRequest = require('./middleware/schemaValidator');
 
+const {members, memberPaymentHistory} = db.models;
 // const validateRequest = SchemaValidator(true);
 
 const app = express();
@@ -105,6 +106,50 @@ app.delete('/api/members/:id',  async (req, res, next) => {
   }
 })
 
+
+app.get('/api/payments/members', async (req, res, next) => {
+  try {
+    members.hasMany(memberPaymentHistory, {foreignKey: 'id'})
+    memberPaymentHistory.belongsTo(members, {foreignKey: 'member_id'})
+    const memberPayments = await memberPaymentHistory.findAll({
+      // where:{member_id:id}, 
+      attributes: ['id', 
+      'member_id', 
+      'description', 
+      'ammount', 
+      'reciept_no', 
+      'date_of_payment', 
+      'remarks'],
+      include: [{
+        model: members,
+        attributes: ['id', 
+                    'name'],
+        required: true,
+       }] 
+
+    });
+    const response = memberPayments.map((elem) => {
+      return (
+        {
+          id : elem.id,
+          member_id: elem.member_id,
+          description: elem.description,
+          amount : elem.ammount,
+          reciept_no : elem.reciept_no,
+          date_of_payment: elem.date_of_payment,
+          remarks: elem.remarks,
+          name: elem.member.name,
+
+        }
+      )
+    })
+    res.send(response);
+  } catch(err){
+    res.status(500);
+    next;
+  }
+})
+
 //* Catch HTTP 404 
 app.use((req, res, next) => {
   next(createHttpError(404));
@@ -121,4 +166,4 @@ app.use((err, req, res, next) => {
   })
 })
 
-var server = app.listen(port, () => console.log('Listning to server on port ${port}'));
+var server = app.listen(port, () => console.log(`Listning to server on port ${port}`));
