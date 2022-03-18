@@ -8,9 +8,9 @@ export const  deleteMember = 'http://localhost:5000/api/members';
 
 // Payment History
 export const  getMembersPayments = 'http://localhost:5000/api/payments/members';
-export const  postMemberPayments = 'http://localhost:5000/api/members/payments';
-export const  putMemberPayment = 'http://localhost:5000/api/members/payments';
-export const  deleteMemberPayment = 'http://localhost:5000/api/members/payments';
+export const  postMemberPayments = 'http://localhost:5000/api/payments/members';
+export const  putMemberPayment = 'http://localhost:5000/api/payments/members';
+export const  deleteMemberPayment = 'http://localhost:5000/api/payments/members';
    
 
  

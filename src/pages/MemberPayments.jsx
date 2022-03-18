@@ -9,19 +9,21 @@ import TablePagination from '@mui/material/TablePagination';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 
-import MembersForm from '../Forms/Members';
+import MembersForm from '../Forms/MemberPayments';
 import DeleteRecord from '../messages/DeleteRecord';
 import SuccessDialog from '../messages/SuccessDialog'
 import Checkbox from '@mui/material/Checkbox';
 
 import * as useMemberService from '../components/services/MembersService';
 
+import formaters from '../utils/formatters';
+
 const initRecordToUpdate = {
   id: '',
   name:'',
   member_id:'',
   description:'',
-  ammount:0.00,
+  amount:0.00,
   date_of_payment: new Date(),
   reciept_no:'',
   remarks:''
@@ -45,6 +47,8 @@ export default function MemberPayments() {
 
   const [selected, setSelected] = React.useState([]);
 
+// Different formaters to be used
+  const {currencyFormatter, dateShortFormatter} = formaters;
   
   const  getMembersPayments = async () => {
     const response = await fetch(service.getMembersPayments);
@@ -209,7 +213,7 @@ export default function MemberPayments() {
         </Grid>
         <Grid container flexWrap={'wrap'} paddingTop={'5px'}> 
           <Grid item xs={3} md={1}>
-            <Button variant="contained" onClick={handleCreate}>Create</Button>
+            <Button variant="contained" onClick={handleCreate}>Make</Button>
           </Grid>
           <Grid item xs={3} md={1}>
             <Button variant="contained" color="error" onClick={handleDelete}>Delete</Button>
@@ -252,8 +256,8 @@ export default function MemberPayments() {
                   <TableCell>M-{row.id}</TableCell>
                   <TableCell>{row.name}</TableCell>
                   <TableCell>{row.description}</TableCell>
-                  <TableCell>{row.amount}</TableCell>
-                  <TableCell>{new Date(row.date_of_payment).toISOString().split('T')[0]}</TableCell>
+                  <TableCell>{currencyFormatter.format(row.amount)}</TableCell>
+                  <TableCell>{dateShortFormatter.format(new Date(row.date_of_payment))}</TableCell>
                   <TableCell>{row.reciept_no}</TableCell>
                   <TableCell>{row.remarks}</TableCell>
                 </TableRow>);
@@ -283,9 +287,6 @@ export default function MemberPayments() {
                   }}
                   showFirstButton={true}
                   showLastButton={true}
-                  //ActionsComponent={TablePaginationActions}
-                  //component={Box}
-                  //sx and classes prop discussed in styling section
                 />
               </TableRow>
             </TableFooter>
@@ -296,7 +297,7 @@ export default function MemberPayments() {
         open={open}
         handleClose={handleClose}
         recordToUpdate={recordToUpdate}
-        createOrUpdateMembers={createOrUpdateMemberPayment}
+        createOrUpdateMembersPayment={createOrUpdateMemberPayment}
       />
       <DeleteRecord
         handleClose={handleClose}

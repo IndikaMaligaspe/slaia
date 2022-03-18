@@ -150,6 +150,19 @@ app.get('/api/payments/members', async (req, res, next) => {
   }
 })
 
+app.post('/api/payments/members', validateRequest('memberPaymentSchema'), async (req, res, next) => {
+  try{
+    const { member_id, description,  amount, date_of_payment, reciept_no , remarks  } = req.body;
+    const msg = await memberPaymentHistory.create( { 
+      member_id, description,  amount, date_of_payment, reciept_no , remarks
+    });
+    res.status(201).send();
+  } catch(err) {
+    res.status(500);
+    next;
+  }
+})
+
 //* Catch HTTP 404 
 app.use((req, res, next) => {
   next(createHttpError(404));
